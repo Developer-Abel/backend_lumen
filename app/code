@@ -1,0 +1,35 @@
+function create(Request $request){
+        $user = new User;
+        $user->nombre = $request->nombre;
+        $user->usuario = $request->usuario;
+        $user->email = $request->email;
+        $user->password = Hash::make($request->password);
+        $isSave=$user->save();
+        if ($user->save()) {
+            $user->api_token = Str::random(32);
+            $isSave=$user->save();
+            return response()->json(['RESPONSE'=>'EL USUARIO SE HA CREADO EXITOSAMENTE','api'=>$user->api_token],201);
+        }
+
+        return response()->json(['ERROR'=>'OCURRIO UN ERROR AL REGISTRAR USUARIO'],204);
+    }
+*******************************
+    function login(Request $request){
+        $user = User::where('email',$request->email)->first();
+        if ($user && Hash::check($request->password, $user->password)) {
+            return $user;
+        }else{
+            return 'nop';
+        }
+    }
+*****************************
+function logout(){
+        $user = Auth()->user();
+        $user->api_token= null;
+        if ($user->save()) {
+            return "adios";
+        }
+        return "no cerro sesion";
+    }
+        return "no cerro sesion";
+    }
